@@ -1,0 +1,28 @@
+.table{
+   
+    .cellWrapper{
+        display: flex;
+        align-items: center;
+        .image{
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+    }
+}
+.numbers {
+    // background-color: rgb(16, 81, 119);
+    display: flex;
+
+    .number {
+        display: flex;
+        flex: row;
+        justify-content: center;
+        gap: 10px;
+        color: black;
+        
+
+    }
+}

@@ -1,0 +1,134 @@
+.datatable {
+    height: 650px;
+    padding: 20px;
+    font-weight: bold;
+
+    .datatableTitle {
+        width: 100%;
+        font-size: 24px;
+        color: gray;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .link {
+            margin-right: 6.5%;
+            display: flex;
+            width: 50px;
+            height: 50px;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            background-color: rgba(20, 87, 20, 0.89);
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgba(20, 87, 20, 0.747);
+                color: white;
+            }
+
+            .add {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    .table {
+
+        .cellWrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+            flex-direction: row;
+
+            .image {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 10px;
+                object-fit: cover;
+            }
+
+            .fav {
+                width: 15px;
+                height: 15px;
+                background-color: rgb(22, 196, 100);
+                border-radius: 50%;
+                color: white;
+                display: flex;
+                justify-content: center;
+                font-size: 10px;
+                font-weight: bold;
+                position: absolute;
+                bottom: 0;
+
+            }
+        }
+
+        .editButton,
+        .deleteButton {
+            width: 50px;
+            margin-left: 6px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .editButton {
+            background-color: rgba(48, 64, 155, 0.89);
+            color: white;
+            font-weight: bold;
+
+            &:hover {
+                background-color: rgba(48, 64, 155, 0.747);
+            }
+        }
+
+        .deleteButton {
+            background-color: rgba(197, 22, 22, 0.89);
+            color: white;
+            font-weight: bold;
+
+            &:hover {
+                background-color: rgba(197, 22, 22, 0.747);
+            }
+        }
+
+
+
+    }
+
+    .search {
+        width: 350px;
+        border: none;
+        border-bottom: 2px solid #09632b6c;
+        height: 40px;
+        font-weight: bold;
+        font-size: 15px;
+        color: gray;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+
+}
+
+.numbers {
+    // background-color: rgb(16, 81, 119);
+    display: flex;
+
+    .number {
+        display: flex;
+        flex: row;
+        justify-content: center;
+        gap: 10px;
+        color: black;
+        
+
+    }
+}

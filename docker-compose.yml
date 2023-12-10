@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  server:
+    build: 
+      context: ./server
+      dockerfile: dockerfile
+    env_file:
+      - ./server/server.env
+    volumes:
+      - ./server:/app
+    ports:
+      - "4000:4000"
+    container_name: contact-manager-server
+
+  app:
+    build: 
+      context: ./app
+      dockerfile: dockerfile
+    env_file:
+      - ./app/app.env
+    volumes:
+      - ./app:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    container_name: contact-manager-app

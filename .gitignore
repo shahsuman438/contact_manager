@@ -5,3 +5,4 @@
 /server/node_modules/
 /server/uploads/contacts/*
 /server/uploads/users/*
+/myvenv

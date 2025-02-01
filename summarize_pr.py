@@ -1,4 +1,7 @@
 import re
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
 
 # Read the diff from the file
 with open("code_diff.txt", "r", encoding="utf-8") as file:
@@ -27,11 +30,6 @@ with open("code_diff.txt", "r", encoding="utf-8") as file:
 #     output_file.write(summary_text)
 
 # print("✅ PR Summary Generated!")
-
-
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
 
 load_dotenv()
 

@@ -1,0 +1,48 @@
+name: Auto-Create PR with Summary
+
+on:
+  push:
+    branches:
+      - "feature/*"  # Runs when pushing to feature branches
+
+jobs:
+  auto-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Ensure we have a previous commit for diff
+
+      - name: Get Code Diff
+        run: |
+          git fetch origin main --depth=1
+          git diff origin/main HEAD > code_diff.txt
+
+      - name: Run Python Script to Generate Summary
+        run: python summarize_pr.py
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          PR_TITLE="🚀 Feature: ${BRANCH_NAME}"
+          SUMMARY=$(cat pr_summary.txt)
+          BODY="### PR Summary\n\n$SUMMARY"
+
+          # Check if PR already exists
+          PR_EXISTS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository }}:$BRANCH_NAME&base=main" \
+                            | jq '. | length')
+
+          if [ "$PR_EXISTS" -eq "0" ]; then
+            # Create a new PR
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 "https://api.github.com/repos/${{ github.repository }}/pulls" \
+                 -d "$(jq -n --arg title "$PR_TITLE" --arg body "$BODY" --arg head "$BRANCH_NAME" --arg base "main" '{title: $title, body: $body, head: $head, base: $base}')"
+          else
+            echo "PR already exists for branch $BRANCH_NAME. Skipping creation."
+          fi

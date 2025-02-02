@@ -3,14 +3,14 @@ name: Auto-Create or Update PR with Summary
 on:
   push:
     branches:
-      - "feature/*"  # Runs when pushing to feature branches
+      - "feature/*"
 
 jobs:
   auto-create-or-update-pr:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # ✅ Allows PR creation
-      pull-requests: write  # ✅ Allows updating PRs
+      contents: write   
+      pull-requests: write 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -32,12 +32,13 @@ jobs:
 
       - name: Create or Update Pull Request
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}  # ✅ Use PAT instead of default token
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          PR_TITLE="🚀 Feature: ${BRANCH_NAME}"
+          TITLE=$(cat pr_title.txt)
+          PR_TITLE="🚀 Feature: ${BRANCH_NAME}: ${TITLE}"
           SUMMARY=$(cat pr_summary.txt)
-          BODY="### PR Summary\n\n$SUMMARY"
+          BODY="$SUMMARY"
 
           # Get existing PR ID if it exists
           PR_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \

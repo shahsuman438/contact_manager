@@ -2,34 +2,11 @@ import re
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import json
 
 # Read the diff from the file
 with open("code_diff.txt", "r", encoding="utf-8") as file:
     code_diff = file.readlines()
-
-# Extract changed files and modifications
-# changed_files = set()
-# summary = []
-
-# for line in code_diff:
-#     if line.startswith("diff --git"):
-#         file_name = re.findall(r"b/(.*)", line)
-#         if file_name:
-#             changed_files.add(file_name[0])
-#     elif line.startswith("+") and not line.startswith("+++"):
-#         summary.append(f"🟢 Added: {line.strip()}")
-#     elif line.startswith("-") and not line.startswith("---"):
-#         summary.append(f"🔴 Removed: {line.strip()}")
-
-# # Format summary
-# summary_text = f"**Changed Files:** {', '.join(changed_files)}\n\n"
-# summary_text += "\n".join(summary[:10])  # Limit to 10 changes for readability
-
-# # Save summary to a file
-# with open("pr_summary.txt", "w", encoding="utf-8") as output_file:
-#     output_file.write(summary_text)
-
-# print("✅ PR Summary Generated!")
 
 load_dotenv()
 
@@ -49,15 +26,25 @@ def get_completion(prompt, model="gpt-4o-mini", temperature=1):
 
 
 prompt = f"""
-Generate the summarized PR Description with the following code mention in triple backticks differents and get the summary in following format
-1. heading
-2. description of changes
+Generate the summarized PR Description with the following code mention in triple backticks and get the summary in following format and response in json
+with key title:'Generate suatable PR Title' and body:'this should be markup text includes topics like summary(summarize the changes), changes(short description for each code file and code changes),screenshots('leave this blank just have heading') ,suggestion(suggest the improvements)', 
 ```{code_diff}```
 """
 
 response = get_completion(prompt)
+cleaned_response = response.replace("`", "").replace("json", "")
+try:
+    responseJson = json.loads(cleaned_response) if isinstance(cleaned_response, str) else cleaned_response
+except json.JSONDecodeError as e:
+    print(f"Failed to decode JSON: {e}")
+    raise
 
 with open("pr_summary.txt", "w", encoding="utf-8") as output_file:
-    output_file.write(response)
+    output_file.write(responseJson["body"])
 
-print(response)
+with open("pr_title.txt", "w", encoding="utf-8") as output_file:
+    output_file.write(responseJson["title"])
+
+print(responseJson)
+print(responseJson["body"])
+print(responseJson["title"])

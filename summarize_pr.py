@@ -27,13 +27,13 @@ def get_completion(prompt, model="gpt-4o-mini", temperature=1):
 
 prompt = f"""
 Generate the summarized PR Description with the following code mention in triple backticks and get the summary in following format and response in json
-with key title:'Generate suatable PR Title' and body:'this should be markups include topics like summary(summarize the changes), changes(short description for each code file and code changes),screenshots('leave this blank just have heading') ,suggestion(suggest the improvements)', 
+with key title:'Generate suatable PR Title' and body:'this should be markup text includes topics like summary(summarize the changes), changes(short description for each code file and code changes),screenshots('leave this blank just have heading') ,suggestion(suggest the improvements)', 
 ```{code_diff}```
 """
 
 response = get_completion(prompt)
-
+cleanedResponse = response.replace("`", "").replace("json", "")
 with open("pr_summary.json", "w", encoding="utf-8") as output_file:
-    json.dump(response, output_file, indent=4)
+    json.dump(cleanedResponse, output_file, indent=4)
 
-print(response)
+print(cleanedResponse)

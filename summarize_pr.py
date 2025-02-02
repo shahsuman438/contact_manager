@@ -32,8 +32,13 @@ with key title:'Generate suatable PR Title' and body:'this should be markup text
 """
 
 response = get_completion(prompt)
-cleanedResponse = response.replace("`", "").replace("json", "")
-responseJson = json.load(cleanedResponse)
+cleaned_response = response.replace("`", "").replace("json", "")
+try:
+    responseJson = json.loads(cleaned_response) if isinstance(cleaned_response, str) else cleaned_response
+except json.JSONDecodeError as e:
+    print(f"Failed to decode JSON: {e}")
+    raise
+
 with open("pr_summary.txt", "w", encoding="utf-8") as output_file:
     output_file.write(responseJson["body"])
 

@@ -2,6 +2,7 @@ import re
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import json
 
 # Read the diff from the file
 with open("code_diff.txt", "r", encoding="utf-8") as file:
@@ -33,6 +34,6 @@ with key title:'Generate suatable PR Title' and body:'this should be markups inc
 response = get_completion(prompt)
 
 with open("pr_summary.json", "w", encoding="utf-8") as output_file:
-    output_file.write(response)
+    json.dump(response, file, indent=4)
 
 print(response)

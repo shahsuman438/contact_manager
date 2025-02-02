@@ -34,6 +34,6 @@ with key title:'Generate suatable PR Title' and body:'this should be markups inc
 response = get_completion(prompt)
 
 with open("pr_summary.json", "w", encoding="utf-8") as output_file:
-    json.dump(response, file, indent=4)
+    json.dump(response, output_file, indent=4)
 
 print(response)

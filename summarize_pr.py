@@ -33,7 +33,12 @@ with key title:'Generate suatable PR Title' and body:'this should be markup text
 
 response = get_completion(prompt)
 cleanedResponse = response.replace("`", "").replace("json", "")
-with open("pr_summary.json", "w", encoding="utf-8") as output_file:
-    json.dump(cleanedResponse, output_file, indent=4)
+with open("pr_summary.txt", "w", encoding="utf-8") as output_file:
+    output_file.write(cleanedResponse["body"])
+
+with open("pr_title.txt", "w", encoding="utf-8") as output_file:
+    output_file.write(cleanedResponse["title"])
 
 print(cleanedResponse)
+print(cleanedResponse["body"])
+print(cleanedResponse["title"])

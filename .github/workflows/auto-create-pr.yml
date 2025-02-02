@@ -1,0 +1,69 @@
+name: Auto-Create or Update PR with Summary
+
+on:
+  push:
+    branches:
+      - "feature/*"  # Runs when pushing to feature branches
+
+jobs:
+  auto-create-or-update-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # ✅ Allows PR creation
+      pull-requests: write  # ✅ Allows updating PRs
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get Code Diff
+        run: |
+          git fetch origin main --depth=1
+          git diff origin/main HEAD > code_diff.txt
+
+      - name: Install Python Dependencies
+        run: pip install -r requirement.txt
+
+      - name: Run Python Script to Generate Summary
+        env:
+            OPEN_AI_KEY: ${{secrets.OPEN_AI_KEY}}
+        run: python summarize_pr.py
+
+      - name: Create or Update Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}  # ✅ Use PAT instead of default token
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          PR_TITLE="🚀 Feature: ${BRANCH_NAME}"
+          SUMMARY=$(cat pr_summary.txt)
+          BODY="### PR Summary\n\n$SUMMARY"
+
+          # Get existing PR ID if it exists
+          PR_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.actor }}:$BRANCH_NAME&base=main")
+
+          PR_ID=$(echo "$PR_DATA" | jq '.[0].number')
+
+          if [[ "$PR_ID" == "null" ]]; then
+            echo "No existing PR found. Creating a new one."
+
+            # Create a new PR
+            PR_RESPONSE=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls" \
+              -d "$(jq -n --arg title "$PR_TITLE" --arg body "$BODY" --arg head "${{ github.actor }}:$BRANCH_NAME" --arg base "main" '{title: $title, body: $body, head: $head, base: $base}')")
+
+            echo "$PR_RESPONSE" | jq .
+          else
+            echo "Existing PR found: #$PR_ID. Updating PR body."
+
+            # Update PR body with the latest summary
+            curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_ID" \
+              -d "$(jq -n --arg body "$BODY" '{body: $body}')"
+
+            echo "PR #$PR_ID updated successfully."
+          fi

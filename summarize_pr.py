@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import json
 
-# Read the diff from the file
 with open("code_diff.txt", "r", encoding="utf-8") as file:
     code_diff = file.readlines()
 

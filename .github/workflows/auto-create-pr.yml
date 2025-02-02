@@ -38,7 +38,7 @@ jobs:
           TITLE=$(cat pr_title.txt)
           PR_TITLE="🚀 Feature: ${BRANCH_NAME}: ${TITLE}"
           SUMMARY=$(cat pr_summary.txt)
-          BODY="### PR Summary \n\n $SUMMARY"
+          BODY="$SUMMARY"
 
           # Get existing PR ID if it exists
           PR_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \

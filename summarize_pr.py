@@ -25,19 +25,26 @@ def feed_and_get_content(prompt, model="gpt-4o-mini", temperature=1):
 
 
 prompt = f"""
-Generate the summarized PR Description with the following code mention in triple backticks and get the summary in following format and response in json
-with key title:'Generate suatable PR Title' and body:'this should be markup text includes topics like summary(summarize the changes), 
-changes(short description for each code file and code changes),screenshots('leave this blank just have heading') ,
-suggestion(suggest the improvements also include the code improvement), 
-possible breakage(check for possible breakage of the code if there is then point out that code and suggestion to fix)',
- 
+Generate a summarized PR description based on the provided code snippet. The response should be in JSON format with the following keys:
+    title: A suitable PR title.
+    body: A structured markdown text including:
+        Summary: A concise overview of the changes.
+        Changes: A breakdown of modifications per file, describing key updates.
+        Screenshots: (Leave this blank, just include the heading.)
+        Suggestions: Recommendations for improvements, including potential code enhancements.
+        Possible Breakage: Identify any potential code-breaking changes and suggest fixes.
+        The code snippet will be enclosed within triple backticks.
 ```{code_diff}```
 """
 
 response = feed_and_get_content(prompt)
 cleaned_response = response.replace("`", "").replace("json", "")
 try:
-    responseJson = json.loads(cleaned_response) if isinstance(cleaned_response, str) else cleaned_response
+    responseJson = (
+        json.loads(cleaned_response)
+        if isinstance(cleaned_response, str)
+        else cleaned_response
+    )
 except json.JSONDecodeError as e:
     print(f"Failed to decode JSON: {e}")
     raise

@@ -2,28 +2,31 @@ const jwt=require('jsonwebtoken')
 
 
 
-function verifyToken(req,res,next){
-    if(!req.headers.authorization){
-        return res.status(401).send({"msg":"Unauthorized Access"})
+const jwt = require('jsonwebtoken');
+
+function verifyToken(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ msg: "Unauthorized Access - No Token Provided" });
     }
-    let token=req.headers.authorization.split(' ')[1]
-    if(token==null){
-        return res.status(401).send({"msg":"Unauthorized Access"})
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ msg: "Unauthorized Access - Invalid Token" });
     }
+
     try {
-        let payload=jwt.verify(token,'skaccess')
-        if(!payload){
-            console.log("!payload")
-            return res.status(401).send({"msg":"Unauthorized Access"})
-        }
-        req.userId=payload
-        next() 
-        
+        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        req.userId = payload.subject; // Ensure proper extraction of user ID
+        next();
     } catch (error) {
-        return res.status(401).send({"msg":error.name})
+        return res.status(403).json({ msg: "Forbidden - Invalid Token", error: error.name });
     }
-     
 }
+
+module.exports = verifyToken;
+
 
 
 module.exports=verifyToken
